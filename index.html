@@ -333,6 +333,11 @@ display: none;
 0% { transform: scale(0.9); opacity: 0.2; }
 100% { transform: scale(1); opacity: 1; }
 }
+#topRankingContainer {
+  display: block;
+  padding: 10px;
+  min-height: 100px;
+}    
 .empty-state {
 text-align: center;
 padding: 20px;
@@ -2359,8 +2364,8 @@ async function renderTopRankings() {
 
     data.forEach(entry => {
       const id = entry["Player ID"];
-      const rawAvg = entry["Average Score"];
-      const avg = parseFloat(rawAvg);
+      const rawAvg = entry["Average Score"] || entry["Percentage"];
+      const avg = parseFloat(rawAvg) * (rawAvg < 1 ? 100 : 1); 
       if (!id || isNaN(avg) || avg === 0) return;
 
       if (!grouped[id] || avg > grouped[id].average) {
