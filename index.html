@@ -456,11 +456,16 @@ display: table-cell;
   body {
     direction: rtl;
   }
-  
+  .staff-column {
+  display: table-cell;
+}
+ (max-width: 768px) {
+  .staff-column {
+    display: none !important;
+  }
   .export-buttons {
     display: none !important;
   }
-}
 
 .pdf-table {
   width: 100%;
@@ -742,7 +747,7 @@ margin: 0 5px;
 <div class="search-group">
 <select id="filterType" onchange="showFilterOptions(this.value)">
 <option value="">🔍 بحث حسب...</option>
-<div id="activeFilters" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;"></div>
+<div id="activeFilters" class="chip-container" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;"></div>
 <option value="name">الاسم</option>
 <option value="id">المعرّف</option>
 <option value="staff">الموظف</option>
@@ -1754,7 +1759,6 @@ const activitySummaryHTML = `
 `;
 controls.innerHTML = activitySummaryHTML;
   
-  // 🟢 عرض اللاعبين "عام فقط"
   if (generalOnlyIDs.size > 0) {
     const headerRow = document.createElement("tr");
     headerRow.className = "no-activity";
@@ -1780,7 +1784,6 @@ controls.innerHTML = activitySummaryHTML;
     });
   }
 
-  // 🟡 عرض اللاعبين مع أنشطة
   if (activityPlayers.size > 0) {
     const headerRow = document.createElement("tr");
     headerRow.className = "general-with-activities";
@@ -1812,7 +1815,6 @@ controls.innerHTML = activitySummaryHTML;
     });
   }
 
-  // 🧱 تفصيل الأنشطة (حسب النوع)
   const activityGroups = getActivityGroups(activityRecords);
   Object.entries(activityGroups)
     .sort((a, b) => b[1].players.size - a[1].players.size)
@@ -1829,7 +1831,7 @@ controls.innerHTML = activitySummaryHTML;
           <td>${formatDate(entry.Timestamp)}</td>
           <td>${entry["Child Name"] || ""} ${entry.Parent || ""}</td>
           <td>${entry.ID || ""}</td>
-          ${!isMobile ? `<td>${entry["Scanned By"] || ""}</td>` : ""}
+          <td class="staff-column">${entry["Scanned By"] || ""}</td>
           <td>${entry.Activity || ""}</td>
         `;
         tbody.appendChild(row);
@@ -2244,9 +2246,9 @@ renderMainTable();
 }
 
 function renderTopParticipants() {
-  const container = document.getElementById('topParticipantsContainer');
-  container.innerHTML = 'https://script.google.com/macros/s/AKfycbzJwZ7Ulx_pfSOsnpQ-fEicYnXPWsGB7b0k_pTrpglnkFXBPQpU-WEXV7VXYyIQkHh2nw/exec';
-
+  const container = document.getElementById('topParticipantsCards');
+  container.innerHTML = '';
+    
   const selectedDate = document.getElementById("datePicker").value || new Date().toISOString().split('T')[0];
   let selectedRecords = currentPeriod === 'today'
     ? allData.filter(r => r.dateKey === selectedDate && !r.isGeneral && r.Activity)
@@ -2498,28 +2500,23 @@ function generatePrintContent() {
   return html;
 }
    
-// Enhanced Export Functions
 function exportToExcel() {
   const wb = XLSX.utils.book_new();
   
-  // Main Attendance Sheet
   const wsMain = XLSX.utils.json_to_sheet(prepareMainExportData());
   XLSX.utils.book_append_sheet(wb, wsMain, "الحضور العام");
   
-  // Activities Sheet (if in activities view or showing activities)
   if (document.getElementById("activityView").style.display !== "none" || 
       currentPeriod !== 'today') {
     const wsActivities = XLSX.utils.json_to_sheet(prepareActivitiesExportData());
     XLSX.utils.book_append_sheet(wb, wsActivities, "الأنشطة");
   }
   
-  // Stats Sheet (if in stats view)
   if (document.getElementById("statsView").style.display !== "none") {
     const wsStats = XLSX.utils.json_to_sheet(prepareStatsExportData());
     XLSX.utils.book_append_sheet(wb, wsStats, "الإحصائيات");
   }
   
-  // Generate filename based on current view and period
   let filename = "إحصائيات راصد - نادي كلباء الرياضي الثقافي";
   if (currentPeriod === 'week') filename += "_الأسبوع";
   else if (currentPeriod === 'month') filename += "_الشهر";
@@ -2529,7 +2526,6 @@ function exportToExcel() {
 }
     
 
-// Helper functions for data preparation
 function prepareMainExportData() {
   const rows = document.querySelectorAll('#attendanceTable tbody tr');
   const exportData = [];
@@ -2540,12 +2536,12 @@ function prepareMainExportData() {
     if (cells.length < 6) return;
 
     const id = cells[2].textContent.trim();
-    if (seenIds.has(id)) return; // Skip duplicates
+    if (seenIds.has(id)) return; 
     seenIds.add(id);
 
     const date = cells[0].textContent.trim().split(' ')[0];
     const time = cells[0].textContent.trim().split(' ')[1];
-    const fullName = cells[1].textContent.trim(); // Already child + parent
+    const fullName = cells[1].textContent.trim(); 
     const staff = cells[3].textContent.trim();
     const activity = cells[4].textContent.trim();
     const type = cells[5].textContent.trim();
@@ -2848,10 +2844,13 @@ dropdownAutoWidth: true
 
 function setupAutocomplete() {
 $('#filter-name').autocomplete({
-source: [...new Set(allData.map(i => `${i["Child Name"] || ""} ${i.Parent || ""}`.trim()).filter(n => n))],
-minLength: 2
+  source: [...new Set(
+    allData.map(i => `${i["Child Name"] || ""} ${i.Parent || ""} (${i.ID})`.trim())
+    .filter(n => n)
+  )],
+  minLength: 2
 });
-
+const name = $('#filter-name').val().split(' (')[0].toLowerCase().trim();
 setTimeout(() => {
 $('.ui-autocomplete').removeAttr('aria-live');
 }, 100);
