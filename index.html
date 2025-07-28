@@ -2303,26 +2303,6 @@ function renderTopParticipants() {
   container.style.gap = '20px';
 }
 
-document.getElementById("showTopAttendanceBtn").addEventListener("click", () => {
-  document.getElementById("topAttendanceContainer").style.display = "block";
-  document.getElementById("topRankingContainer").style.display = "none";
-  toggleRankingButtons(true);
-});
-
-document.getElementById("showTopEvaluationBtn").addEventListener("click", () => {
-  document.getElementById("topAttendanceContainer").style.display = "none";
-  document.getElementById("topRankingContainer").style.display = "block";
-  toggleRankingButtons(false);
-  renderTopRankings(); 
-});
-
-function toggleRankingButtons(showAttendance) {
-  document.getElementById("showTopAttendanceBtn").classList.toggle("btn-primary", showAttendance);
-  document.getElementById("showTopAttendanceBtn").classList.toggle("btn-outline-primary", !showAttendance);
-  document.getElementById("showTopEvaluationBtn").classList.toggle("btn-primary", !showAttendance);
-  document.getElementById("showTopEvaluationBtn").classList.toggle("btn-outline-primary", showAttendance);
-}
-
 async function renderTopRankings() {
   const response = await fetch("https://script.google.com/macros/s/AKfycbz3uCLPvjazvaFRAiZVppFkKMMS2AlOWC4P3Fpy4XluiJ7xGV3BUVuwgmxfww7bMEcR/exec");
   const data = await response.json();
@@ -2816,6 +2796,28 @@ window.addEventListener('resize', checkMobileView);
 </div>
 </footer>
 </div>  
+    
+<script>
+  document.getElementById("showTopAttendanceBtn").addEventListener("click", () => {
+    document.getElementById("topAttendanceContainer").style.display = "block";
+    document.getElementById("topRankingContainer").style.display = "none";
+    toggleRankingButtons(true);
+  });
+
+  document.getElementById("showTopEvaluationBtn").addEventListener("click", () => {
+    document.getElementById("topAttendanceContainer").style.display = "none";
+    document.getElementById("topRankingContainer").style.display = "block";
+    toggleRankingButtons(false);
+    renderTopRankings(); // ⬅️ Only runs when needed
+  });
+
+  function toggleRankingButtons(showAttendance) {
+    document.getElementById("showTopAttendanceBtn").classList.toggle("btn-primary", showAttendance);
+    document.getElementById("showTopAttendanceBtn").classList.toggle("btn-outline-primary", !showAttendance);
+    document.getElementById("showTopEvaluationBtn").classList.toggle("btn-primary", !showAttendance);
+    document.getElementById("showTopEvaluationBtn").classList.toggle("btn-outline-primary", showAttendance);
+  }
+</script>
 
 </body>
 </html>
