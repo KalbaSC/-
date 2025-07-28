@@ -2420,7 +2420,7 @@ async function renderTopRankings() {
         <h4 style="color:#f4e733; margin:10px 0 5px;">${player.name}</h4>
         <p style="color:#ccc; font-size: 13px;">ID: ${player.id}</p>
         <p style="color:#aaa; font-size: 13px;">${getActivityIcon(player.activity)} ${player.activity}</p>
-        <p style="color:#0f0; font-size: 13px;">المعدل: ${player.average.toFixed(2)}</p>
+        <p style="color:#0f0; font-size: 13px;">المعدل: ${player.average.toFixed(0)}%</p>
       `;
 
       topThreeContainer.appendChild(card);
@@ -2429,14 +2429,30 @@ async function renderTopRankings() {
     others.forEach((player, index) => {
       const card = document.createElement('div');
       card.className = 'ranking-card';
-      card.innerHTML = `
-        <div class="player-badge">${index + 4}</div>
-        <img src="user-icon.png" class="player-avatar" />
-        <h3>${player.name}</h3>
-        <p class="activity-label">${getActivityIcon(player.activity)} ${player.activity}</p>
-        <p>ID: ${player.id}</p>
-        <p style="color:#0f0; font-size: 13px;">المعدل: ${player.average.toFixed(0)}%</p>
-      `;
+card.style = `
+  background: #222;
+  border: 3px solid #ccc;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  width: 150px;
+  box-shadow: 0 0 8px rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: transform 0.3s;
+`;
+
+card.innerHTML = `
+  <div class="player-badge">${others.length + 3 - index}</div>
+  <img src="user-icon.png" alt="${player.name}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid #ccc;">
+  <h4 style="color:#f4e733; margin:10px 0 5px;">${player.name}</h4>
+  <p style="color:#ccc; font-size: 13px;">ID: ${player.id}</p>
+  <p style="color:#aaa; font-size: 13px;">${getActivityIcon(player.activity)} ${player.activity}</p>
+  <p style="color:#0f0; font-size: 13px;">المعدل: ${(player.average).toFixed(0)}%</p>
+`;
+
       container.appendChild(card);
     });
 
