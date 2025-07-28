@@ -2354,48 +2354,51 @@ async function renderTopRankings() {
 
     const grouped = {};
 
-data.forEach(entry => {
-  const id = entry["Player ID"];
-  const rawAvg = entry["Average Score"];
-  const avg = parseFloat(rawAvg);
+const topThreeContainer = document.getElementById('topThreeContainer');
+const container = document.getElementById('rankingsContainer');
+topThreeContainer.innerHTML = '';
+container.innerHTML = '';
 
-  if (!id || isNaN(avg) || avg === 0) return;
+const validRankings = rankings
+  .filter(player => !isNaN(player.average) && player.average > 0)
+  .sort((a, b) => b.average - a.average);
 
-  if (!grouped[id] || avg > grouped[id].avg) {
-    grouped[id] = {
-      name: entry["Player Name"],
-      activity: entry["Activity"] || "غير معروف",
-      avg: avg,
-      id: id
-    };
-  }
+const top3 = validRankings.slice(0, 3);
+const others = validRankings.slice(3, 50);
+
+const orderedTop3 = [top3[1], top3[0], top3[2]];
+
+orderedTop3.forEach((player, index) => {
+  if (!player) return;
+  const card = document.createElement('div');
+  card.className = 'ranking-card';
+
+  const badges = ['🥈', '👑', '🥉'];
+  card.innerHTML = `
+    <div class="player-badge">${badges[index]}</div>
+    <img src="user-icon.png" class="player-avatar" />
+    <h3>${player.name}</h3>
+    <p class="activity-label">${getActivityIcon(player.activity)} ${player.activity}</p>
+    <p>ID: ${player.id}</p>
+    <p>المعدل: ${player.average.toFixed(0)}%</p>
+  `;
+  if (index === 1) card.classList.add("glow");
+  topThreeContainer.appendChild(card);
 });
 
-
-    const sorted = Object.values(grouped).sort((a, b) => b.avg - a.avg).slice(0, 5);
-
-    const container = document.getElementById('topRankingCards');
-    container.innerHTML = "";
-
-    sorted.forEach((player, index) => {
-      const card = document.createElement('div');
-      let badge = '';
-      let borderColor = '#555';
-      let glow = '';
-
-      if (index === 0) {
-        badge = '👑';
-        borderColor = '#f4e733';
-        glow = '0 0 20px #f4e733aa';
-      } else if (index === 1) {
-        badge = '🥈';
-        borderColor = '#ccc';
-      } else if (index === 2) {
-        badge = '🥉';
-        borderColor = '#b87333';
-      } else {
-        badge = '⭐';
-      }
+others.forEach((player, index) => {
+  const card = document.createElement('div');
+  card.className = 'ranking-card';
+  card.innerHTML = `
+    <div class="player-badge">${index + 4}</div>
+    <img src="user-icon.png" class="player-avatar" />
+    <h3>${player.name}</h3>
+    <p class="activity-label">${getActivityIcon(player.activity)} ${player.activity}</p>
+    <p>ID: ${player.id}</p>
+    <p>المعدل: ${player.average.toFixed(0)}%</p>
+  `;
+  container.appendChild(card);
+});
 
       card.style = `
         background: #222;
