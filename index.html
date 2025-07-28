@@ -448,7 +448,10 @@ display: table-cell;
   margin-top: 6px;
   color: #333;
 }
-
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 @media print {
   body {
     direction: rtl;
@@ -2351,20 +2354,23 @@ async function renderTopRankings() {
 
     const grouped = {};
 
-    data.forEach(entry => {
-      const id = entry["Player ID"];
-      const rawAvg = entry["Average Score"];
-      const avg = !isNaN(parseFloat(rawAvg)) ? parseFloat(rawAvg) : 0;
+data.forEach(entry => {
+  const id = entry["Player ID"];
+  const rawAvg = entry["Average Score"];
+  const avg = parseFloat(rawAvg);
 
-      if (!grouped[id] || avg > grouped[id].avg) {
-        grouped[id] = {
-          name: entry["Player Name"],
-          activity: entry["Activity"] || "غير معروف",
-          avg: avg,
-          id: id
-        };
-      }
-    });
+  if (!id || isNaN(avg) || avg === 0) return;
+
+  if (!grouped[id] || avg > grouped[id].avg) {
+    grouped[id] = {
+      name: entry["Player Name"],
+      activity: entry["Activity"] || "غير معروف",
+      avg: avg,
+      id: id
+    };
+  }
+});
+
 
     const sorted = Object.values(grouped).sort((a, b) => b.avg - a.avg).slice(0, 5);
 
