@@ -2324,7 +2324,9 @@ async function renderTopRankings() {
 
   data.forEach(entry => {
     const id = entry["Player ID"];
-    const avg = parseFloat(entry["Average Score"]);
+    const rawAvg = entry["Average Score"];
+    const avg = !isNaN(parseFloat(rawAvg)) ? parseFloat(rawAvg) : 0;
+
     if (!grouped[id] || avg > grouped[id].avg) {
       grouped[id] = {
         name: entry["Player Name"],
