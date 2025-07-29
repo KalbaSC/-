@@ -944,6 +944,10 @@ onclick="promptForPassword()">
 <h3 style="color:#f4e733;">إحصائيات اليوم</h3>
 <div id="todayStats"></div>
 </div>
+<div class="stat-card">
+  <h3 style="color:#f4e733;">توزيع التقييمات</h3>
+  <canvas id="rankingsChart" height="200"></canvas>
+</div>
 </div>
 </div>
 
@@ -1966,6 +1970,9 @@ renderStaffChart();
 renderTimingChart();
 renderActivityChart();    
 renderDailyStats();
+      if (document.getElementById("topParticipantsView").style.display !== "none") {
+    renderTopRankings();
+  }
 }
 
 function renderStaffChart() {
@@ -2419,6 +2426,81 @@ function getActivityIcon(activity) {
   return icons[activity?.trim()] || "🎯";
 }
     
+ function renderRankingsChart(rankingsData) {
+  const scoreRanges = {
+    '90-100%': 0,
+    '80-89%': 0,
+    '70-79%': 0,
+    '60-69%': 0,
+    '50-59%': 0,
+    'أقل من 50%': 0
+  };
+
+  rankingsData.forEach(player => {
+    const score = player.average;
+    if (score >= 90) scoreRanges['90-100%']++;
+    else if (score >= 80) scoreRanges['80-89%']++;
+    else if (score >= 70) scoreRanges['70-79%']++;
+    else if (score >= 60) scoreRanges['60-69%']++;
+    else if (score >= 50) scoreRanges['50-59%']++;
+    else scoreRanges['أقل من 50%']++;
+  });
+
+  if (charts.rankings) charts.rankings.destroy();
+
+  const ctx = document.getElementById('rankingsChart').getContext('2d');
+  charts.rankings = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(scoreRanges),
+      datasets: [{
+        label: 'عدد اللاعبين',
+        data: Object.values(scoreRanges),
+        backgroundColor: [
+          '#4CAF50', // Green
+          '#8BC34A', // Light green
+          '#FFC107', // Yellow
+          '#FF9800', // Orange
+          '#F44336', // Red
+          '#9E9E9E'  // Gray
+        ],
+        borderColor: '#222',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `عدد اللاعبين: ${context.raw}`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'عدد اللاعبين'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'نطاق التقييم'
+          }
+        }
+      }
+    }
+  });
+}   
+    
 async function renderTopRankings() {
   console.log("Rendering rankings...");
   const loadingPopup = document.getElementById('loadingPopup');
@@ -2451,7 +2533,9 @@ data.forEach(entry => {
     const rankings = Object.values(grouped)
       .sort((a, b) => b.average - a.average)
       .slice(0, 50);
-
+      
+     renderRankingsChart(rankings);
+      
     const topThreeContainer = document.getElementById('topThreeContainer');
     const container = document.getElementById('rankingsContainer');
     topThreeContainer.innerHTML = '';
