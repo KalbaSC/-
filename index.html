@@ -2329,57 +2329,42 @@ function renderTopParticipants() {
   }
 
 const top3 = topParticipants.slice(0, 3);
-const others = topParticipants.slice(3);
+const rest = topParticipants.slice(3);
 
-const orderedTop3 = [top3[1], top3[0], top3[2]]; // silver, gold, bronze
-const badges = ['🥈', '👑', '🥉'];
-const colors = ['#ccc', '#f4e733', '#b87333'];
-const glows = ['', '0 0 20px #f4e733aa', ''];
+const displayOrder = [
+  rest[1],        
+  top3[2],          
+  top3[0],          
+  top3[1],      
+  rest[0]           
+].filter(Boolean);  
 
-orderedTop3.forEach((participant, index) => {
-  if (!participant) return;
+const badges = ['5️⃣', '🥉', '👑', '🥈', '4️⃣'];
+const borderColors = ['#555', '#b87333', '#f4e733', '#ccc', '#555'];
+const glows = ['', '', '0 0 20px #f4e733aa', '', ''];
+
+displayOrder.forEach((participant, i) => {
   const card = document.createElement('div');
+  const badge = badges[i];
+  const borderColor = borderColors[i];
+  const glow = glows[i];
+
   card.style = `
     background: #222;
-    border: 3px solid ${colors[index]};
+    border: 3px solid ${borderColor};
     border-radius: 12px;
     padding: 15px;
     text-align: center;
     width: 150px;
-    box-shadow: ${glows[index]};
+    box-shadow: ${glow};
     display: flex;
     flex-direction: column;
     align-items: center;
     transition: transform 0.3s;
   `;
   card.innerHTML = `
-    <div style="font-size: 28px; margin-bottom: 5px;">${badges[index]}</div>
-    <img src="user-icon.png" alt="${participant.name}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid ${colors[index]};">
-    <h4 style="color:#f4e733; margin:10px 0 5px;">${participant.name}</h4>
-    <p style="color:#ccc; font-size: 13px;">ID: ${participant.id}</p>
-    <p style="color:#aaa; font-size: 13px;">أنشطة: ${participant.count}</p>
-  `;
-  container.appendChild(card);
-});
-
-others.forEach((participant, index) => {
-  const card = document.createElement('div');
-  card.style = `
-    background: #222;
-    border: 3px solid #555;
-    border-radius: 12px;
-    padding: 15px;
-    text-align: center;
-    width: 150px;
-    box-shadow: 0 0 8px rgba(255,255,255,0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.3s;
-  `;
-  card.innerHTML = `
-    <div class="player-badge">${index + 4}</div>
-    <img src="user-icon.png" alt="${participant.name}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid #555;">
+    <div style="font-size: 28px; margin-bottom: 5px;">${badge}</div>
+    <img src="user-icon.png" alt="${participant.name}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid ${borderColor};">
     <h4 style="color:#f4e733; margin:10px 0 5px;">${participant.name}</h4>
     <p style="color:#ccc; font-size: 13px;">ID: ${participant.id}</p>
     <p style="color:#aaa; font-size: 13px;">أنشطة: ${participant.count}</p>
