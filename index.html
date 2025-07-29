@@ -2483,7 +2483,21 @@ data.forEach(entry => {
         <img src="user-icon.png" alt="${player.name}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid ${colors[index]};">
         <h4 style="color:#f4e733; margin:10px 0 5px;">${player.name}</h4>
         <p style="color:#ccc; font-size: 13px;">ID: ${player.id}</p>
-        <p style="color:#aaa; font-size: 13px;">${getActivityIcon(player.activity)} ${player.activity}</p>
+        <div style="
+  background: #f4e733;
+  padding: 4px 10px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  font-weight: bold;
+  color: #222;
+  font-size: 14px;
+">
+  ${player.activity}
+  <span>${getActivityIcon(player.activity)}</span>
+</div>
         <p style="color:#0f0; font-size: 13px;">المعدل: ${player.average.toFixed(0)}%</p>
       `;
 
@@ -2513,7 +2527,22 @@ card.innerHTML = `
   <img src="user-icon.png" alt="${player.name}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid #ccc;">
   <h4 style="color:#f4e733; margin:10px 0 5px;">${player.name}</h4>
   <p style="color:#ccc; font-size: 13px;">ID: ${player.id}</p>
-  <p style="color:#aaa; font-size: 13px;">${getActivityIcon(player.activity)} ${player.activity}</p>
+  <p style="margin-top: 5px;">
+  <div style="
+    background: #f4e733;
+    padding: 4px 10px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: bold;
+    color: #222;
+    font-size: 14px;
+  ">
+    ${player.activity}
+    <span>${getActivityIcon(player.activity)}</span>
+  </div>
+</p>
   <p style="color:#0f0; font-size: 13px;">المعدل: ${(player.average).toFixed(0)}%</p>
 `;
 
