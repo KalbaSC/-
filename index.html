@@ -2402,22 +2402,24 @@ async function renderTopRankings() {
     const data = await response.json();
 
     const grouped = {};
+      
+data.forEach(entry => {
+  const id = entry["Player ID"];
+  const rawAvg = entry["Average Score"] || entry["Percentage"];
+  let avg = parseFloat(rawAvg);
+  if (avg <= 1 && avg > 0) avg *= 100;
 
-    data.forEach(entry => {
-      const id = entry["Player ID"];
-      const rawAvg = entry["Average Score"] || entry["Percentage"];
-      const avg = parseFloat(rawAvg) * (rawAvg < 1 ? 100 : 1); 
-      if (!id || isNaN(avg) || avg === 0) return;
+  if (!id || isNaN(avg) || avg === 0) return;
 
-      if (!grouped[id] || avg > grouped[id].average) {
-        grouped[id] = {
-          name: entry["Player Name"],
-          activity: entry["Activity"] || "غير معروف",
-          average: avg,
-          id: id
-        };
-      }
-    });
+  if (!grouped[id] || avg > grouped[id].average) {
+    grouped[id] = {
+      name: entry["Player Name"],
+      activity: entry["Activity"] || "غير معروف",
+      average: avg,
+      id: id
+    };
+  }
+});
 
     const rankings = Object.values(grouped)
       .sort((a, b) => b.average - a.average)
