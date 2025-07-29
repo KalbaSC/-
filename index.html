@@ -457,6 +457,41 @@ display: table-cell;
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+    #showTopAttendanceBtn, 
+#showTopEvaluationBtn {
+  background: #f4e733;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 5px;
+  font-family: 'NotoKufiArabic', sans-serif;
+  transition: all 0.3s ease;
+}
+
+#showTopAttendanceBtn:hover,
+#showTopEvaluationBtn:hover {
+  background: #e6d429;
+  transform: translateY(-2px);
+}
+
+#showTopAttendanceBtn:active,
+#showTopEvaluationBtn:active {
+  transform: translateY(0);
+}
+
+#showTopEvaluationBtn {
+  background: #222;
+  color: #f4e733;
+  border: 1px solid #f4e733;
+}
+
+#showTopEvaluationBtn:hover {
+  background: #333;
+}
+
 @media print {
   body {
     direction: rtl;
@@ -464,40 +499,7 @@ display: table-cell;
   .staff-column {
   display: table-cell;
 }
- (max-width: 768px) {
-  .staff-column {
-    display: none !important;
-  }
-  .export-buttons {
-    display: none !important;
-  }
-
-.pdf-table {
-  width: 100%;
-  border-collapse: collapse;
-  direction: rtl;
-}
-
-.pdf-table th {
-  background-color: #f4e733;
-  color: black;
-  padding: 8px;
-  text-align: right;
-  border: 1px solid #ddd;
-}
-
-.pdf-table td {
-  padding: 8px;
-  text-align: right;
-  border: 1px solid #ddd;
-}
-
-.pdf-table tr:nth-child(even) {
-  background-color: #333;
-}
-#topParticipantsContainer div:hover {
-  transform: scale(1.05);
-}
+    }
 
 @media (max-width: 768px) {
 .header-right {
@@ -706,6 +708,45 @@ font-size: 12px;
 font-size: 16px;
 margin: 0 5px;
 }
+      .staff-column {
+    display: none !important;
+  }
+  .export-buttons {
+    display: none !important;
+  }
+
+.pdf-table {
+  width: 100%;
+  border-collapse: collapse;
+  direction: rtl;
+}
+
+.pdf-table th {
+  background-color: #f4e733;
+  color: black;
+  padding: 8px;
+  text-align: right;
+  border: 1px solid #ddd;
+}
+
+.pdf-table td {
+  padding: 8px;
+  text-align: right;
+  border: 1px solid #ddd;
+}
+
+.pdf-table tr:nth-child(even) {
+  background-color: #333;
+}
+#topParticipantsContainer div:hover {
+  transform: scale(1.05);
+}
+  #showTopAttendanceBtn, 
+  #showTopEvaluationBtn {
+    padding: 12px 16px;
+    min-height: 44px;
+    font-size: 14px;
+  }
 }
 </style>
 </head>
