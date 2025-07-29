@@ -2060,41 +2060,47 @@ function renderTimingChart() {
 }
 
 function renderActivityChart() {
-    const activityCounts = {};
-    filteredData.forEach(row => {
-        if (row.Activity && row.Activity !== "عام") {
-            activityCounts[row.Activity] = (activityCounts[row.Activity] || 0) + 1;
-        }
-    });
+  const activityCounts = {};
+  const seen = {};
 
-    if (charts.activities) charts.activities.destroy();
+  filteredData.forEach(row => {
+    const activity = row.Activity;
+    const id = row.ID;
+    if (!activity || activity === "عام" || !id) return;
 
-    const ctx = document.getElementById('activityChart').getContext('2d');
-    charts.activities = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(activityCounts),
-            datasets: [{
-                data: Object.values(activityCounts),
-                backgroundColor: ['#f4e733','#ff9800','#ffbb00','#4caf50', '#795548', '#d9534f']
-            }]
-        },
-        options: {
-            plugins: {
-                legend: { position: 'bottom', labels: { color: 'white' } },
-                title: {
-                    display: true,
-                    text: 'مشاركة الحضور حسب الأنشطة',
-                    color: 'white',
-                    font: {
-                        size: 18
-                    }
-                }
-            },
-            cutout: '50%',
-            responsive: true
+    const key = `${activity}_${id}`;
+    if (!seen[key]) {
+      seen[key] = true;
+      activityCounts[activity] = (activityCounts[activity] || 0) + 1;
+    }
+  });
+
+  if (charts.activities) charts.activities.destroy();
+
+  const ctx = document.getElementById('activityChart').getContext('2d');
+  charts.activities = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(activityCounts),
+      datasets: [{
+        data: Object.values(activityCounts),
+        backgroundColor: ['#f4e733','#ff9800','#ffbb00','#4caf50', '#795548', '#d9534f']
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'bottom', labels: { color: 'white' } },
+        title: {
+          display: true,
+          text: 'مشاركة الحضور حسب الأنشطة',
+          color: 'white',
+          font: { size: 18 }
         }
-    }); 
+      },
+      cutout: '50%',
+      responsive: true
+    }
+  });
 }
   
 function updateWeekSummary(startDate, endDate) {
