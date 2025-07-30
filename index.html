@@ -2462,7 +2462,7 @@ const rankings = Object.values(grouped)
   .sort((a, b) => b.average - a.average)
   .slice(0, 50);
 
-    rankingsData.forEach(player => {
+    rankings.forEach(player => {
       const score = player.average;
       if (score >= 90) scoreRanges['90-100%']++;
       else if (score >= 80) scoreRanges['80-89%']++;
