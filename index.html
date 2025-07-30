@@ -2442,11 +2442,18 @@ async function renderRankingsChart() {
 
       if (!id || isNaN(avg) || avg === 0) return;
 
-      if (!grouped[id] || avg > grouped[id].average) {
-        grouped[id] = {
-          average: avg
-        };
-      }
+      if (!grouped[id]) {
+  grouped[id] = {
+    name: entry["Player Name"],
+    activity: entry["Activity"] || "غير معروف",
+    total: 0,
+    count: 0,
+    id: id
+  };
+}
+grouped[id].total += avg;
+grouped[id].count += 1;
+     
     });
 
     const rankingsData = Object.values(grouped);
@@ -2552,14 +2559,18 @@ data.forEach(entry => {
 
   if (!id || isNaN(avg) || avg === 0) return;
 
-  if (!grouped[id] || avg > grouped[id].average) {
-    grouped[id] = {
-      name: entry["Player Name"],
-      activity: entry["Activity"] || "غير معروف",
-      average: avg,
-      id: id
-    };
-  }
+  if (!grouped[id]) {
+  grouped[id] = {
+    name: entry["Player Name"],
+    activity: entry["Activity"] || "غير معروف",
+    total: 0,
+    count: 0,
+    id: id
+  };
+}
+grouped[id].total += avg;
+grouped[id].count += 1;
+
 });
 
     const rankings = Object.values(grouped)
