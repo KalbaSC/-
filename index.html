@@ -2554,34 +2554,36 @@ async function renderTopRankings() {
     const data = await response.json();
 
 const grouped = {};
+
 data.forEach(entry => {
   const id = entry["Player ID"];
-  const rawAvgKey = Object.keys(entry).find(k => k.toLowerCase().includes("percent") || k.toLowerCase().includes("average"));
-  let avg = rawAvgKey ? parseFloat(entry[rawAvgKey].toString().replace("%", "")) : NaN;
+  const name = entry["Player Name"];
+  const activity = entry["Activity"] || "غير معروف";
+  let raw = parseFloat(entry["Percentage"]);
+  if (isNaN(raw)) raw = 0;
+  const percentage = raw <= 1 ? Math.round(raw * 100) : Math.round(raw);
 
-  if (!id || isNaN(avg) || avg === 0) return;
+  if (!id || !name || percentage === 0) return;
 
   if (!grouped[id]) {
     grouped[id] = {
-      name: entry["Player Name"],
-      activity: entry["Activity"] || "غير معروف",
+      name,
+      activity,
       total: 0,
-      count: 0,
-      id: id
+      count: 0
     };
   }
 
-  grouped[id].total += avg;
+  grouped[id].total += percentage;
   grouped[id].count += 1;
 });
 
-const rankings = Object.values(grouped)
-  .map(player => {
-    const average = player.count > 0 ? player.total / player.count : 0;
-    return { ...player, average };
-  })
-  .sort((a, b) => b.average - a.average)
-  .slice(0, 50);
+const rankings = Object.entries(grouped).map(([id, player]) => ({
+  id,
+  name: player.name,
+  activity: player.activity,
+  average: Math.round(player.total / player.count)
+})).sort((a, b) => b.average - a.average);
       
      renderRankingsChart(rankings);
       
