@@ -2432,54 +2432,59 @@ async function renderRankingsChart() {
     const response = await fetch("https://script.google.com/macros/s/AKfycbz3uCLPvjazvaFRAiZVppFkKMMS2AlOWC4P3Fpy4XluiJ7xGV3BUVuwgmxfww7bMEcR/exec");
     const data = await response.json();
 
-const grouped = {};
-data.forEach(entry => {
-  const id = entry["Player ID"];
-  const rawAvgKey = Object.keys(entry).find(k => k.toLowerCase().includes("percent") || k.toLowerCase().includes("average"));
-  let avg = rawAvgKey ? parseFloat(entry[rawAvgKey].toString().replace("%", "")) : NaN;
+    const grouped = {};
 
-  if (!id || isNaN(avg) || avg === 0) return;
+    data.forEach(entry => {
+      const id = entry["Player ID"];
+      const name = entry["Player Name"];
+      const activity = entry["Activity"] || "غير معروف";
 
-  if (!grouped[id]) {
-    grouped[id] = {
-      name: entry["Player Name"],
-      activity: entry["Activity"] || "غير معروف",
-      total: 0,
-      count: 0,
-      id: id
+      let raw = parseFloat(entry["Percentage"]);
+      if (isNaN(raw)) raw = 0;
+      const percentage = raw <= 1 ? Math.round(raw * 100) : Math.round(raw);
+
+      if (!id || !name || percentage === 0) return;
+
+      if (!grouped[id]) {
+        grouped[id] = {
+          id,
+          name,
+          activity,
+          total: 0,
+          count: 0
+        };
+      }
+
+      grouped[id].total += percentage;
+      grouped[id].count += 1;
+    });
+
+    const rankings = Object.values(grouped)
+      .map(player => ({
+        ...player,
+        average: Math.round(player.total / player.count)
+      }))
+      .sort((a, b) => b.average - a.average)
+      .slice(0, 50);
+
+    const scoreRanges = {
+      '90-100%': 0,
+      '80-89%': 0,
+      '70-79%': 0,
+      '60-69%': 0,
+      '50-59%': 0,
+      'أقل من %50': 0
     };
-  }
 
-  grouped[id].total += avg;
-  grouped[id].count += 1;
-});
-
-const rankings = Object.values(grouped)
-  .map(player => {
-    const average = player.count > 0 ? player.total / player.count : 0;
-    return { ...player, average };
-  })
-  .sort((a, b) => b.average - a.average)
-  .slice(0, 50);
-
-const scoreRanges = {
-  '90-100%': 0,
-  '80-89%': 0,
-  '70-79%': 0,
-  '60-69%': 0,
-  '50-59%': 0,
-  'أقل من %50': 0
-};
-      
-rankings.forEach(player => {
-  const score = player.average;
-  if (score >= 90) scoreRanges['90-100%']++;
-  else if (score >= 80) scoreRanges['80-89%']++;
-  else if (score >= 70) scoreRanges['70-79%']++;
-  else if (score >= 60) scoreRanges['60-69%']++;
-  else if (score >= 50) scoreRanges['50-59%']++;
-  else scoreRanges['أقل من %50']++;
-});
+    rankings.forEach(player => {
+      const score = player.average;
+      if (score >= 90) scoreRanges['90-100%']++;
+      else if (score >= 80) scoreRanges['80-89%']++;
+      else if (score >= 70) scoreRanges['70-79%']++;
+      else if (score >= 60) scoreRanges['60-69%']++;
+      else if (score >= 50) scoreRanges['50-59%']++;
+      else scoreRanges['أقل من %50']++;
+    });
 
     if (charts.rankings) charts.rankings.destroy();
 
@@ -2492,12 +2497,12 @@ rankings.forEach(player => {
           label: 'عدد اللاعبين',
           data: Object.values(scoreRanges),
           backgroundColor: [
-            '#4CAF50',
+            '#4CAF50', 
             '#8BC34A', 
-            '#FFC107', 
-            '#FF9800',
-            '#F44336', 
-            '#9E9E9E' 
+            '#FFC107',
+            '#FF9800', 
+            '#F44336',  
+            '#9E9E9E'  
           ],
           borderColor: '#222',
           borderWidth: 1
@@ -2506,9 +2511,7 @@ rankings.forEach(player => {
       options: {
         responsive: true,
         plugins: {
-          legend: {
-            display: false
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
               label: function(context) {
@@ -2543,7 +2546,7 @@ rankings.forEach(player => {
     loadingPopup.style.display = 'none';
   }
 }
-    
+
 async function renderTopRankings() {
   console.log("Rendering rankings...");
   const loadingPopup = document.getElementById('loadingPopup');
