@@ -2437,10 +2437,10 @@ async function renderRankingsChart() {
     data.forEach(entry => {
       const id = entry["Player ID"];
       const rawAvg = entry["Average Score"] || entry["Percentage"];
-      let avg = parseFloat(rawAvg);
-      if (avg <= 1 && avg > 0) avg *= 100;
-
-      if (!id || isNaN(avg) || avg === 0) return;
+let avg = parseFloat(rawAvg);
+if (isNaN(avg)) return;
+if (avg <= 1 && avg > 0) avg *= 100;
+if (avg === 0) return;
 
       if (!grouped[id]) {
   grouped[id] = {
@@ -2554,10 +2554,10 @@ async function renderTopRankings() {
 data.forEach(entry => {
   const id = entry["Player ID"];
   const rawAvg = entry["Average Score"] || entry["Percentage"];
-  let avg = parseFloat(rawAvg);
-  if (avg <= 1 && avg > 0) avg *= 100;
-
-  if (!id || isNaN(avg) || avg === 0) return;
+let avg = parseFloat(rawAvg);
+if (isNaN(avg)) return;
+if (avg <= 1 && avg > 0) avg *= 100;
+if (avg === 0) return;
 
   if (!grouped[id]) {
   grouped[id] = {
@@ -2631,7 +2631,7 @@ grouped[id].count += 1;
   ${player.activity}
   <span>${getActivityIcon(player.activity)}</span>
 </div>
-        <p style="color:#0f0; font-size: 13px;">المعدل: ${player.average.toFixed(0)}%</p>
+        <p style="color:#0f0; font-size: 13px;">المعدل: ${typeof player.average === 'number' ? player.average.toFixed(0) + '%' : 'غير متوفر'}</p>
       `;
 
       topThreeContainer.appendChild(card);
