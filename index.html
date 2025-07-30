@@ -2462,15 +2462,24 @@ const rankings = Object.values(grouped)
   .sort((a, b) => b.average - a.average)
   .slice(0, 50);
 
-    rankings.forEach(player => {
-      const score = player.average;
-      if (score >= 90) scoreRanges['90-100%']++;
-      else if (score >= 80) scoreRanges['80-89%']++;
-      else if (score >= 70) scoreRanges['70-79%']++;
-      else if (score >= 60) scoreRanges['60-69%']++;
-      else if (score >= 50) scoreRanges['50-59%']++;
-      else scoreRanges['أقل من 50%']++;
-    });
+const scoreRanges = {
+  '90-100%': 0,
+  '80-89%': 0,
+  '70-79%': 0,
+  '60-69%': 0,
+  '50-59%': 0,
+  'أقل من %50': 0
+};
+      
+rankings.forEach(player => {
+  const score = player.average;
+  if (score >= 90) scoreRanges['90-100%']++;
+  else if (score >= 80) scoreRanges['80-89%']++;
+  else if (score >= 70) scoreRanges['70-79%']++;
+  else if (score >= 60) scoreRanges['60-69%']++;
+  else if (score >= 50) scoreRanges['50-59%']++;
+  else scoreRanges['أقل من %50']++;
+});
 
     if (charts.rankings) charts.rankings.destroy();
 
